@@ -1,58 +1,75 @@
-import json
 import random
-import os 
+from database import get_connections
+from datetime import date
 
-DATA_FILE = "districts.json"
-
-
-# lock in..
-
-def load_data(): 
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r") as f: 
-            return json.load(f)
-    return {"districts": {}, "members": {}}
-
-
-def save_data(data): 
-    with open(DATA_FILE, "w") as f:
-        json.dump(data, f, indent=2)
-
-def generate_address(data):
+def generate_address(cursor):
     sub = random.randint(1, 9)
     city = random.randint(1, 20)
-    district = random.randint(1, 20)
-
     districts = list(range(1, 21))
     random.shuffle(districts)
-    for d in districts:
-        adress = f"#0-{sub}-{city:02d}-{d:04d}"
-        if adress not in data["districts"]:
-            return adress
-        if len(data["districts"][adress]["members"]) < 9999:
-            return adress
 
+
+    for d in districts:
+        address = f"#0-{sub}-{city:02d}-{d:04d}"
+        cursor.execute(
+            "SELECT COUNT(*) FROM members WHERE address = ?",
+            (address,)
+        )
+        count = cursor.fetchone()[0]
+        if count < 9999:
+            return address
     return None
 
-def assign_member(email):
-    data = load_data()
+# i hate syntax..
 
-    if email in data["members"]:
-        adress = data["members"][email]
-        print(f"Welcome back, you are in {address}")
+def assign_member(email):
+    conn = get_connections()
+    cursor = conn.cursor()
+
+    cursor.execute(
+       "SELECT address FROM members WHERE email = ?",
+       (email,)
+    )
+    existing = cursor.fetchone()
+
+
+    if existing:
+        print(f"Welcome back! you are in {existing[0]}")
+        conn.close()
         return
 
-    address = generate_address(data)
 
-    if address not in data["districts"]:
-        data["districts"][address] = {"members": []}
+    adress = generate_address(cursor)
 
-    data["districts"][address]["members"].append(email)
-    data["members"][email] = address
 
-    save_data(data)
-    print(f"welcome to the wired, {email}")
-    print(f"you have been assigened to district {address}")
+    if not adress:
+        print("the wired is full.. somehow...")
+        conn.close()
+        return
 
-email = input("enter you email: ")
-assign_member(email)
+
+    today = date.today().isoformat()
+    cursor.execute(
+        "INSERT INTO members (email, address, joined_date) VALUES (?, ?, ?)",
+        (email, adress, today)
+    )
+
+    conn.commit()
+    conn.close()
+
+    print(f"Welcome to the wired, {email}")
+    print(f"you have been assigned to district {adress}")
+
+email = input("enter your email: ")
+assign_member(email) 
+
+
+
+
+
+
+
+
+
+
+
