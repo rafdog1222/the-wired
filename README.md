@@ -20,7 +20,9 @@ if you have any questions feel free to ask! Yippee!
 
 INSTALLATION (<- that was 100% spelt wrong)
 
-1 pull my repo, 
+v0.0 
+
+1 pull my repo, (make sure it's v0.0 there might be more at the time of writing and reading this) 
 2 cry, 
 3 if cool linux, then make a venv
 4 then make a sqlite3 database, and set the path in database.py (mine is set to wired.db, so that's the default when i commit)
@@ -28,3 +30,9 @@ INSTALLATION (<- that was 100% spelt wrong)
 6 run database.py (this set's up the .db)
 7 ahha, 6 then 7, haha 67................ Oh, yeah, then run base.py and your done 
 PS when it asks for your email you do not need to give it, type anything, hopefully in the next commit i fix this and set up auto database.py from base.py, but just write your name or whatever..
+
+oh, and, i am really shy, but i am making a discord so people can talk to eachother or even talk to me dircely since i am online most of the time, so just ping me, it's nothing big (to be honest there is 0 people in here right now..) but give a litle look, you might like it..
+
+discord link; 
+https://discord.gg/fZykRfdf99
+
