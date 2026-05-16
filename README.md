@@ -17,3 +17,15 @@ now, the wired, a few questions you may be asking
    Ans; aha, that is a great question, it's called the wired for three reasons, 1 the entire layout is built like a wired system, information up, information down. 2 we tend to not realize it but we are really all connected, and I feel this project will help wire everyone into that fact. 3 because Serial Experiments Lain taught me something that I will never let go of...
 
 if you have any questions feel free to ask! Yippee!
+
+
+INSTALLATION (<- that was 100% spelt wrong)
+
+1 pull my repo, 
+2 cry, 
+3 if cool linux, then make a venv
+4 then make a sqlite3 database, and set the path in database.py (mine is set to wired.db, so that's the default when i commit)
+5 make sure sqlite3 has all the right things, if so; 
+6 run database.py (this set's up the .db)
+7 ahha, 6 then 7, haha 67................ Oh, yeah, then run base.py and your done 
+PS when it asks for your email you do not need to give it, type anything, hopefully in the next commit i fix this and set up auto database.py from base.py, but just write your name or whatever..
