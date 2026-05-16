@@ -35,7 +35,7 @@ def setup_database():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS library (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            origin_adress TEXT NOT NULL,
+            origin_address TEXT NOT NULL,
             author_email TEXT NOT NULL,
             title TEXT NOT NULL,
             timestap TEXT NOT NULL
@@ -44,6 +44,5 @@ def setup_database():
 
     conn.commit()
     conn.close()
-    print("wired database ready")
 
 setup_database()

@@ -34,7 +34,6 @@ def assign_member(email):
 
 
     if existing:
-        print(f"Welcome back! you are in {existing[0]}")
         conn.close()
         return
 
@@ -57,19 +56,5 @@ def assign_member(email):
     conn.commit()
     conn.close()
 
-    print(f"Welcome to the wired, {email}")
     print(f"you have been assigned to district {adress}")
-
-email = input("enter your email: ")
-assign_member(email) 
-
-
-
-
-
-
-
-
-
-
 
