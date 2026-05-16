@@ -18,7 +18,6 @@ now, the wired, a few questions you may be asking
 
 if you have any questions feel free to ask! Yippee!
 
-
 INSTALLATION (<- that was 100% spelt wrong)
 
 1 pull my repo, 
