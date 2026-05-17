@@ -18,7 +18,25 @@ now, the wired, a few questions you may be asking
 
 if you have any questions feel free to ask! Yippee!
 
+discord link; 
+https://discord.gg/fZykRfdf99
+
+
+
 INSTALLATION (<- that was 100% spelt wrong)
+
+v0.1 
+1. pull me repo, (make sure it's v0.1 there may be more at the time of writing this)
+2. if cool linux person make a venv, if not linux person do te first half of step 2
+3. make a sqlite database, and point database.py to the .db to whatever you named it, (it's default is "wired" since that's what i use,
+4. run app.py via python, so python app.py
+5. this will open up port 5000 on your localhost, it will also feed you a link to the page anyway, but if for some very weird and weird reason you don't get that link then http://<your_ip>:5000 
+6. rejoice,
+7. cry because i haven't made nat so you can't forward it to anyone else, or host it, but that is for v0.2 lol
+8. join my discord and beg me to make the next vertion sooner, becues you love the wired so very much 
+9. ignore 8. if your cool, and just join anyway, it's just me at the time of writting this... 
+
+
 
 v0.0 
 
