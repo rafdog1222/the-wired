@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>the wired — travel</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #00ff99;
+            font-family: monospace;
+            margin: 0;
+            padding: 40px;
+        }
+        .header {
+            border-bottom: 1px solid #00ff99;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .nav a {
+            color: #888;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 0.9em;
+        }
+        .nav a:hover { color: #00ff99; }
+        .location {
+            font-size: 1.4em;
+            margin-bottom: 6px;
+        }
+        .travelling-box {
+            border: 1px solid #00ff99;
+            padding: 30px;
+            text-align: center;
+            margin: 40px 0;
+        }
+        .timer {
+            font-size: 2em;
+            margin: 16px 0;
+        }
+        .timer-sub {
+            color: #888;
+            font-size: 0.85em;
+        }
+        .levels {
+            margin-top: 30px;
+        }
+        .level-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .level-name {
+            width: 120px;
+            color: #888;
+            font-size: 0.9em;
+        }
+        .level-name.active { color: #00ff99; }
+        .level-btn {
+            border: 1px solid #333;
+            color: #888;
+            background: none;
+            font-family: monospace;
+            padding: 6px 16px;
+            cursor: pointer;
+            font-size: 0.85em;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .level-btn:hover { border-color: #00ff99; color: #00ff99; }
+        .level-btn.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        .view-btn {
+            border: 1px solid #00ff99;
+            color: #00ff99;
+            background: none;
+            font-family: monospace;
+            padding: 6px 16px;
+            cursor: pointer;
+            font-size: 0.85em;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .view-btn:hover { background: #00ff99; color: #0a0a0a; }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #333;
+            display: inline-block;
+        }
+        .dot.active { background: #00ff99; }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            margin: 16px 0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #00ff99;
+            transition: width 1s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <div style="color:#888; font-size:0.85em;">travel</div>
+            <div class="location">{{ level_names[current_level] }}</div>
+            <div style="color:#888; font-size:0.85em;">{{ address }}</div>
+        </div>
+        <div class="nav">
+            <a href="/district">← home</a>
+            <a href="/logout">disconnect</a>
+        </div>
+    </div>
+
+    {% if travelling %}
+    <div class="travelling-box">
+        <div style="color:#888; font-size:0.85em;">travelling...</div>
+        <div class="timer" id="timer">{{ seconds_left }}s</div>
+        <div class="timer-sub">arriving at {{ level_names[destination_level] if destination_level is defined else "destination" }}</div>
+        <div class="timer-sub" style="margin-top:8px">refresh when timer reaches zero</div>
+    </div>
+    <script>
+        let t = {{ seconds_left }};
+        const el = document.getElementById("timer");
+        const interval = setInterval(() => {
+            t--;
+            el.textContent = t + "s";
+            if (t <= 0) {
+                clearInterval(interval);
+                window.location.reload();
+            }
+        }, 1000);
+    </script>
+    {% else %}
+    <div style="display: flex; gap: 40px; align-items: flex-start; margin-top: 30px;">
+        <div class="levels" style="flex: 1;">
+            {% for i in range(4) %}
+            <div class="level-row">
+                <span class="dot {% if i == current_level %}active{% endif %}"></span>
+                <span class="level-name {% if i == current_level %}active{% endif %}">
+                    {{ level_names[i] }}
+                </span>
+                {% if i == current_level %}
+                    <a href="/travel/messages" class="view-btn">view messages</a>
+                {% elif (i - current_level)|abs == 1 %}
+                    <a href="/travel/go/{{ i }}" class="level-btn">
+                        {{ "↑ travel up" if i < current_level else "↓ travel down" }}
+                    </a>
+                {% else %}
+                    <span class="level-btn disabled">too far</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="width: 160px; padding-top: 8px;">
+            <svg viewBox="0 0 160 220" width="160" height="220">
+                {% for i in range(4) %}
+                {% set y = i * 56 + 20 %}
+                {% set r = 10 %}
+                {% set cx = 80 %}
+                {% if i < 3 %}
+                <line x1="{{ cx }}" y1="{{ y + r }}" x2="{{ cx }}" y2="{{ y + 56 - r }}"
+                    stroke="{% if i == current_level or i == current_level - 1 %}#00ff99{% else %}#333{% endif %}"
+                    stroke-width="1"/>
+                {% endif %}
+                <circle cx="{{ cx }}" cy="{{ y }}" r="{{ r }}"
+                    fill="{% if i == current_level %}#00ff99{% elif i < current_level %}#1a1a1a{% else %}#1a1a1a{% endif %}"
+                    stroke="{% if i == current_level %}#00ff99{% elif i < current_level %}#444{% else %}#222{% endif %}"
+                    stroke-width="1.5"/>
+                <text x="{{ cx + 18 }}" y="{{ y + 4 }}"
+                    fill="{% if i == current_level %}#00ff99{% elif i < current_level %}#555{% else %}#333{% endif %}"
+                    font-size="10" font-family="monospace">{{ level_names[i] }}</text>
+                {% endfor %}
+            </svg>
+        </div>
+    </div>
+    {% endif %}
+
+</body>
+</html>

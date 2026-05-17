@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>the wired — {{ level_name }}</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #00ff99;
+            font-family: monospace;
+            margin: 0;
+            padding: 40px;
+        }
+        .header {
+            border-bottom: 1px solid #00ff99;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .nav a {
+            color: #888;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 0.9em;
+        }
+        .nav a:hover { color: #00ff99; }
+        .message {
+            border-left: 2px solid #333;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+        }
+        .message:hover { border-left-color: #00ff99; }
+        .meta { color: #888; font-size: 0.8em; margin-bottom: 6px; }
+        .origin { color: #555; font-size: 0.75em; }
+        .content { line-height: 1.6; }
+        .empty { color: #888; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <div style="color:#888; font-size:0.85em;">{{ level_name }} feed</div>
+            <div style="font-size:1.2em;">{{ prefix }}</div>
+        </div>
+        <div class="nav">
+            <a href="/travel">← travel</a>
+            <a href="/district">home</a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for msg in messages %}
+        <div class="message">
+            <div class="meta">{{ msg[3] }} — {{ msg[1] }}</div>
+            <div class="origin">from {{ msg[0] }}</div>
+            <div class="content">{{ msg[2] }}</div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty">nothing flowing through here yet...</div>
+    {% endif %}
+
+</body>
+</html>

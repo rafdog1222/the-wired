@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>the wired — library</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #00ff99;
+            font-family: monospace;
+            margin: 0;
+            padding: 40px;
+        }
+        .header {
+            border-bottom: 1px solid #00ff99;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .nav a {
+            color: #888;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 0.9em;
+        }
+        .nav a:hover { color: #00ff99; }
+        .write-btn {
+            display: inline-block;
+            border: 1px solid #00ff99;
+            color: #00ff99;
+            text-decoration: none;
+            padding: 8px 24px;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+        .write-btn:hover { background: #00ff99; color: #0a0a0a; }
+        .entry {
+            border-left: 2px solid #333;
+            padding: 12px 20px;
+            margin-bottom: 16px;
+            text-decoration: none;
+            display: block;
+            color: #00ff99;
+        }
+        .entry:hover { border-left-color: #00ff99; }
+        .entry-title { font-size: 1em; margin-bottom: 4px; }
+        .entry-meta { color: #888; font-size: 0.8em; }
+        .empty { color: #888; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <div style="color:#888; font-size:0.85em;">{{ level_name }} library</div>
+            <div style="font-size:1.2em;">{{ prefix }}</div>
+        </div>
+        <div class="nav">
+            <a href="/district">← home</a>
+            <a href="/logout">disconnect</a>
+        </div>
+    </div>
+
+    <a href="/write" class="write-btn">+ write an entry</a>
+
+    {% if entries %}
+        {% for entry in entries %}
+        <a href="/library/{{ entry[0] }}" class="entry">
+            <div class="entry-title">{{ entry[2] }}</div>
+            <div class="entry-meta">{{ entry[3] }} — {{ entry[1] }}</div>
+        </a>
+        {% endfor %}
+    {% else %}
+        <div class="empty">the library is empty... leave something behind</div>
+    {% endif %}
+
+</body>
+</html>

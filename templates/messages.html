@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>the wired — message board</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #00ff99;
+            font-family: monospace;
+            margin: 0;
+            padding: 40px;
+        }
+        .header {
+            border-bottom: 1px solid #00ff99;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .address { font-size: 1.2em; }
+        .nav a {
+            color: #888;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 0.9em;
+        }
+        .nav a:hover { color: #00ff99; }
+        .post-form {
+            margin-bottom: 40px;
+        }
+        textarea {
+            width: 100%;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: #00ff99;
+            font-family: monospace;
+            font-size: 0.95em;
+            padding: 12px;
+            resize: vertical;
+            min-height: 80px;
+            box-sizing: border-box;
+        }
+        textarea:focus { border-color: #00ff99; outline: none; }
+        button {
+            margin-top: 10px;
+            background: none;
+            border: 1px solid #00ff99;
+            color: #00ff99;
+            padding: 8px 24px;
+            font-family: monospace;
+            font-size: 0.95em;
+            cursor: pointer;
+        }
+        button:hover { background: #00ff99; color: #0a0a0a; }
+        .message {
+            border-left: 2px solid #333;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+        }
+        .message:hover { border-left-color: #00ff99; }
+        .meta {
+            color: #888;
+            font-size: 0.8em;
+            margin-bottom: 6px;
+        }
+        .content { line-height: 1.6; }
+        .empty { color: #888; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <div style="color:#888; font-size:0.85em;">{{ level_name }} message board</div>
+            <div class="address">{{ prefix }}</div>
+        </div>
+        <div class="nav">
+            <a href="/district">← home</a>
+            <a href="/logout">disconnect</a>
+        </div>
+    </div>
+
+    <div class="post-form">
+        <form method="POST" action="/post_message">
+            <textarea name="content" placeholder="say something to your district..."></textarea>
+            <button type="submit">post to board</button>
+        </form>
+    </div>
+
+    {% if messages %}
+        {% for msg in messages %}
+        <div class="message">
+            <div class="meta">{{ msg[2] }} — {{ msg[0] }}</div>
+            <div class="content">{{ msg[1] }}</div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty">the board is quiet... be the first to post</div>
+    {% endif %}
+
+</body>
+</html>

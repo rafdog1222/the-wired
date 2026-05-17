@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>the wired — write</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #00ff99;
+            font-family: monospace;
+            margin: 0;
+            padding: 40px;
+        }
+        .header {
+            border-bottom: 1px solid #00ff99;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .nav a {
+            color: #888;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 0.9em;
+        }
+        .nav a:hover { color: #00ff99; }
+        input {
+            width: 100%;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-bottom: none;
+            color: #00ff99;
+            font-family: monospace;
+            font-size: 1em;
+            padding: 12px;
+            box-sizing: border-box;
+        }
+        input:focus { border-color: #00ff99; outline: none; }
+        textarea {
+            width: 100%;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: #00ff99;
+            font-family: monospace;
+            font-size: 0.95em;
+            padding: 12px;
+            resize: vertical;
+            min-height: 300px;
+            box-sizing: border-box;
+        }
+        textarea:focus { border-color: #00ff99; outline: none; }
+        button {
+            margin-top: 10px;
+            background: none;
+            border: 1px solid #00ff99;
+            color: #00ff99;
+            padding: 8px 24px;
+            font-family: monospace;
+            font-size: 0.95em;
+            cursor: pointer;
+        }
+        button:hover { background: #00ff99; color: #0a0a0a; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <div style="color:#888; font-size:0.85em;">write an entry</div>
+            <div style="font-size:1.2em;">{{ address }}</div>
+        </div>
+        <div class="nav">
+            <a href="/library">← library</a>
+            <a href="/logout">disconnect</a>
+        </div>
+    </div>
+
+    <form method="POST">
+        <input type="text" name="title" placeholder="entry title" required />
+        <textarea name="content" placeholder="write something worth remembering..."></textarea>
+        <button type="submit">save to library</button>
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>the wired — citizens</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #00ff99;
+            font-family: monospace;
+            margin: 0;
+            padding: 40px;
+        }
+        .header {
+            border-bottom: 1px solid #00ff99;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .nav a {
+            color: #888;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 0.9em;
+        }
+        .nav a:hover { color: #00ff99; }
+        .count {
+            color: #888;
+            font-size: 0.85em;
+            margin-bottom: 24px;
+        }
+        .citizen {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 2px solid #333;
+            padding: 10px 20px;
+            margin-bottom: 10px;
+        }
+        .citizen:hover { border-left-color: #00ff99; }
+        .citizen-email { font-size: 0.95em; }
+        .citizen-address { color: #888; font-size: 0.85em; }
+        .citizen-date { color: #555; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <div style="color:#888; font-size:0.85em;">citizens of the wired</div>
+            <div style="font-size:1.2em;">#0</div>
+        </div>
+        <div class="nav">
+            <a href="/district">← home</a>
+            <a href="/logout">disconnect</a>
+        </div>
+    </div>
+
+    <div class="count">{{ members|length }} citizen{% if members|length != 1 %}s{% endif %} connected</div>
+
+    {% for member in members %}
+    <div class="citizen">
+        <div>
+            <div class="citizen-email">{{ member[0] }}</div>
+            <div class="citizen-address">{{ member[1] }}</div>
+        </div>
+        <div class="citizen-date">{{ member[2] }}</div>
+    </div>
+    {% endfor %}
+
+</body>
+</html>

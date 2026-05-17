@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>the wired — {{ entry[1] }}</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #00ff99;
+            font-family: monospace;
+            margin: 0;
+            padding: 40px;
+        }
+        .header {
+            border-bottom: 1px solid #00ff99;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .nav a {
+            color: #888;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 0.9em;
+        }
+        .nav a:hover { color: #00ff99; }
+        .entry-title {
+            font-size: 1.5em;
+            margin-bottom: 8px;
+        }
+        .meta {
+            color: #888;
+            font-size: 0.85em;
+            margin-bottom: 30px;
+        }
+        .content {
+            line-height: 1.8;
+            white-space: pre-wrap;
+            border-left: 2px solid #333;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <div style="color:#888; font-size:0.85em;">library entry</div>
+            <div style="font-size:1.2em;">{{ address }}</div>
+        </div>
+        <div class="nav">
+            <a href="/library">← library</a>
+            <a href="/district">home</a>
+            <a href="/logout">disconnect</a>
+        </div>
+    </div>
+
+    <div class="entry-title">{{ entry[1] }}</div>
+    <div class="meta">{{ entry[3] }} — {{ entry[0] }}</div>
+    <div class="content">{{ entry[2] }}</div>
+
+</body>
+</html>
