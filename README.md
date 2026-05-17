@@ -27,27 +27,27 @@ INSTALLATION (<- that was 100% spelt wrong)
 
 v0.1 
 1. pull me repo, (make sure it's v0.1 there may be more at the time of writing this)
-2. if cool linux person make a venv, if not linux person do te first half of step 2
-3. make a sqlite database, and point database.py to the .db to whatever you named it, (it's default is "wired" since that's what i use,
+2. if cool linux person make a venv, if not linux person do the first half of step 2
+3. make a sqlite database, and point database.py to the .db to whatever you named it, (it's default is "wired" since that's what i use,)
 4. run app.py via python, so python app.py
 5. this will open up port 5000 on your localhost, it will also feed you a link to the page anyway, but if for some very weird and weird reason you don't get that link then http://<your_ip>:5000 
 6. rejoice,
 7. cry because i haven't made nat so you can't forward it to anyone else, or host it, but that is for v0.2 lol
-8. join my discord and beg me to make the next vertion sooner, becues you love the wired so very much 
+8. join my discord and beg me to make v0.2 sooner, because you love the wired so very much 
 9. ignore 8. if your cool, and just join anyway, it's just me at the time of writting this... 
 
 
 
 v0.0 
 
-1 pull my repo, (make sure it's v0.0 there might be more at the time of writing and reading this) 
-2 cry, 
-3 if cool linux, then make a venv
-4 then make a sqlite3 database, and set the path in database.py (mine is set to wired.db, so that's the default when i commit)
-5 make sure sqlite3 has all the right things, if so; 
-6 run database.py (this set's up the .db)
-7 ahha, 6 then 7, haha 67................ Oh, yeah, then run base.py and your done 
-PS when it asks for your email you do not need to give it, type anything, hopefully in the next commit i fix this and set up auto database.py from base.py, but just write your name or whatever..
+1. pull my repo, (make sure it's v0.0 there might be more at the time of writing and reading this) 
+2. cry, 
+3. if cool linux, then make a venv
+4. then make a sqlite3 database, and set the path in database.py (mine is set to wired.db, so that's the default when i commit)
+5. make sure sqlite3 has all the right things, if so; 
+6. run database.py (this set's up the .db)
+7. ahha, 6 then 7, haha 67................ Oh, yeah, then run base.py and your done 
+8. .PS. when it asks for your email you do not need to give it, type anything, hopefully in the next commit i fix this and set up auto database.py from base.py, but just write your name or whatever..
 
 oh, and, i am really shy, but i am making a discord so people can talk to eachother or even talk to me dircely since i am online most of the time, so just ping me, it's nothing big (to be honest there is 0 people in here right now..) but give a litle look, you might like it..
 
