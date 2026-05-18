@@ -5,6 +5,9 @@ from messages import post_message, read_message
 from library import write_entry, read_library, read_entry
 from travel import view_messages_at_level, view_library_at_level
 from datetime import datetime, timedelta
+from werkzeug.security import generate_password_hash, check_password_hash
+
+
 
 app = Flask(__name__)
 app.secret_key = "wired-secret-change-this-later"
@@ -25,14 +28,74 @@ def get_member(email):
 def index():
     if "email" in session:
         return redirect("/district")
-    if request.method == "POST":
-        email = request.form["email"]
-        member = get_member(email)
-        if not member:
-            assign_member(email)
-        session["email"] = email
-        return redirect("/district")
     return render_template("index.html")
+
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if "email" in session:
+        return redirect("/district")
+    error = None 
+    if request.method == "POST":
+        email = request.form["email"].strip().lower()
+        password = request.form["password"]
+        confirm = request.form["confirm"]
+
+        if not email or not password:
+            error = "email and password are required"
+        elif len(password) < 3: 
+            error = "password must be at least 3 charcters"
+        elif password != confirm:
+            error = "passwords do not match"
+        else:
+            conn = get_connections()
+            cursor = conn.cursor()
+            cursor.execute("SELECT email FROM members WHERE email = ?", (email,))
+            existing = cursor.fetchone()
+            if existing:
+                error = "that email is already in the wired.." 
+                con.close()
+            else:
+                password_hash  = generate_password_hash(password)
+                assign_member(email)
+                cursor.execute(
+                    "UPDATE members SET password_hash = ? WHERE email = ?",
+                    (password_hash, email)
+                )
+                conn.commit()
+                conn.close()
+                session["email"] = email
+                return redirect("/district")
+    return render_template("signup.html", error=error)
+
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if "email" in session:
+        return redirect("/district")
+    error = None 
+    if request.method == "POST":
+        email = request.form["email"].strip().lower()
+        password = request.form["password"]
+        conn = get_connections()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT password_hash FROM members WHERE email = ?", 
+            (email,)
+        )
+        member = cursor.fetchone()
+        conn.close()
+        # why does water taste so.. weird.. fuck i love and hate water..
+        if not member or not member[0]:
+            error = "email not found"
+        elif not check_password_hash(member[0], password):
+            error = "wrong password.."
+        else:
+            session["email"] = email
+            return redirect("/district")
+
+    return render_template("login.html", error=error)
 
 # either a; that works, or b; it fails and I have to rewrite it..
 # spoiler it was b, then b, then b, then a! Yippeee!!

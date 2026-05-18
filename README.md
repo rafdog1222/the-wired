@@ -25,6 +25,19 @@ https://discord.gg/fZykRfdf99
 
 INSTALLATION (<- that was 100% spelt wrong)
 
+v0.2 
+1. be cool linux guy, 
+2. run ' git clone https://github.com/rafdog1222/the-wired.git ' 
+2. cd in there 
+3. make a venv, with ' python -m venv venv ' 
+4. activate the venv!! ' source venv/bin/activate '
+5. installing time~ 
+5. run ' pip install -r requirements.txt '
+6. run ' python app.py ' 
+7. your done, either click the link in the terminal from app.py or head over to ' http://localhost:5000 ' and you're in the wired.
+8. join the discord for more updates, (please it's only me and my thoughts there..)
+
+
 v0.1 
 1. pull me repo, (make sure it's v0.1 there may be more at the time of writing this)
 2. if cool linux person make a venv, if not linux person do the first half of step 2

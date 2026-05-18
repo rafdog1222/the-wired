@@ -17,21 +17,13 @@
             border: 1px solid #00ff99;
             padding: 40px;
             text-align: center;
+            min-width: 300px;
         }
         h1 { font-size: 2em; margin-bottom: 10px; }
         p { color: #888; margin-bottom: 30px; }
-        input {
-            background: #0a0a0a;
-            border: 1px solid #00ff99;
-            color: #00ff99;
-            padding: 10px;
-            font-family: monospace;
-            font-size: 1em;
-            width: 250px;
-        }
-        button {
+        .btn {
             display: block;
-            margin: 15px auto 0;
+            margin: 12px auto;
             background: none;
             border: 1px solid #00ff99;
             color: #00ff99;
@@ -39,18 +31,23 @@
             font-family: monospace;
             font-size: 1em;
             cursor: pointer;
+            text-decoration: none;
+            width: 200px;
         }
-        button:hover { background: #00ff99; color: #0a0a0a; }
+        .btn:hover { background: #00ff99; color: #0a0a0a; }
+        .btn.secondary {
+            border-color: #333;
+            color: #888;
+        }
+        .btn.secondary:hover { border-color: #00ff99; color: #00ff99; background: none; }
     </style>
 </head>
 <body>
     <div class="box">
         <h1>the wired</h1>
         <p>we are all connected</p>
-        <form method="POST">
-            <input type="text" name="email" placeholder="enter your email" required />
-            <button type="submit">enter the wired</button>
-        </form>
+        <a href="/signup" class="btn">join the wired</a>
+        <a href="/login" class="btn secondary">sign in</a>
     </div>
 </body>
 </html>
