@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>the wired — join</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #00ff99;
+            font-family: monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .box {
+            border: 1px solid #00ff99;
+            padding: 40px;
+            min-width: 300px;
+        }
+        h2 { margin: 0 0 24px; font-size: 1.2em; }
+        label {
+            display: block;
+            color: #888;
+            font-size: 0.8em;
+            margin-bottom: 4px;
+            margin-top: 16px;
+        }
+        input {
+            width: 100%;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: #00ff99;
+            font-family: monospace;
+            font-size: 0.95em;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        input:focus { border-color: #00ff99; outline: none; }
+        button {
+            margin-top: 24px;
+            width: 100%;
+            background: none;
+            border: 1px solid #00ff99;
+            color: #00ff99;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        button:hover { background: #00ff99; color: #0a0a0a; }
+        .error {
+            color: #ff4444;
+            font-size: 0.85em;
+            margin-top: 16px;
+        }
+        .switch {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.85em;
+            color: #888;
+        }
+        .switch a { color: #00ff99; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>join the wired</h2>
+        <form method="POST">
+            <label>email</label>
+            <input type="text" name="email" required />
+            <label>password</label>
+            <input type="password" name="password" required />
+            <label>confirm password</label>
+            <input type="password" name="confirm" required />
+            <button type="submit">enter the wired</button>
+        </form>
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        <div class="switch">
+            already connected? <a href="/login">sign in</a>
+        </div>
+    </div>
+</body>
+</html>
