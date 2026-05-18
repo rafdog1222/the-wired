@@ -54,7 +54,7 @@ def signup():
             existing = cursor.fetchone()
             if existing:
                 error = "that email is already in the wired.." 
-                con.close()
+                conn.close()
             else:
                 password_hash  = generate_password_hash(password)
                 assign_member(email)
