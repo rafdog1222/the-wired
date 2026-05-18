@@ -77,7 +77,24 @@
 
     <form method="POST">
         <input type="text" name="title" placeholder="entry title" required />
-        <textarea name="content" placeholder="write something worth remembering..."></textarea>
+        <textarea name="content"
+                  placeholder="write something worth remembering..."></textarea>
+
+        <div style="margin-top:12px; display:flex; align-items:center; gap:10px;">
+            <input type="checkbox"
+                   name="nsfw"
+                   id="nsfw"
+                   style="width:auto;">
+
+            <label for="nsfw"
+                   style="color:#888; font-size:0.85em; margin:0;">
+                flag as sensitive content
+            </label>
+        </div>
+
+        <div style="font-size:0.75em; color:#555; margin-top:6px;">
+            entries are also auto-flagged if they contain sensitive language
+        </div>
         <button type="submit">save to library</button>
     </form>
 

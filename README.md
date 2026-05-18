@@ -25,6 +25,37 @@ https://discord.gg/fZykRfdf99
 
 INSTALLATION (<- that was 100% spelt wrong)
 
+v0.3 
+1. be a very cool linux,
+2. clone the repo, 
+run;   git clone https://github.com/rafdog1222/the-wired.git 
+3. cd in there
+run;    cd the-wired
+4. make a venv, since we are linux, we carry the kernal, we will fight for the freedom, and honner his name
+run;    python -m venv venv
+5. install stuff with pip, 
+run;    pip install -r requirements.txt
+6. datbase set up time, this will take a second... 
+run;    sudo -u postgres psql
+7. if 6 dinn't work install postgresql on your system, if it did work you should be in 
+run;    CREATE DATABASE thewired; 
+8. we need to make some more stuff in here, so the user is next, you need to make the user and password here
+run;    CREATE USER youruser  WITH PASSWORD 'yourpassword';
+9. we are almost done in here, we just need perms, 
+run;    GRANT ALL PRIVILEGES ON DATABASE thewired TO youruser;
+10. we are done in here, i shall let you free, 
+run;    \q 
+11. you should be in your normal terminal now, so let's make the .env stuff ick 
+run;    cp .env.example .env 
+12. edit the .env file, this can be with nano or nvim or even vim i am going to assume nano
+run;    nano .env
+13. add in whatever you want in the .env, if you chage the wiredpass you may need to go back to the datbase and chage the password there, 
+14. now we run everything! Yippee! 
+run     app.py 
+15. you will be given a link in the terminal, click it, or if you want to do it the other way the 
+open your browser and go to  http://localhost:5000 <- if you chaged the port you need to chage it here.......
+
+
 v0.2 
 1. be cool linux guy, 
 2. run ' git clone https://github.com/rafdog1222/the-wired.git ' 

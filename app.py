@@ -8,7 +8,7 @@ from library import write_entry, read_library, read_entry
 from travel import view_messages_at_level, view_library_at_level
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from filter import blur_bad_words, contains_bad_words
 
 
 app = Flask(__name__)
@@ -80,14 +80,14 @@ def signup():
 def login():
     if "email" in session:
         return redirect("/district")
-    error = None 
+    error = None
     if request.method == "POST":
         email = request.form["email"].strip().lower()
         password = request.form["password"]
         conn = get_connections()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT password_hash FROM members WHERE email = %s", 
+            "SELECT password_hash, filter_on FROM members WHERE email = %s",
             (email,)
         )
         member = cursor.fetchone()
@@ -99,8 +99,12 @@ def login():
             error = "wrong password.."
         else:
             session["email"] = email
-            return redirect("/district")
+            # member[1] = filter_on
+            session["filter"] = (
+                member[1] if member[1] is not None else True
+            )
 
+            return redirect("/district")
     return render_template("login.html", error=error)
 
 # either a; that works, or b; it fails and I have to rewrite it..
@@ -115,9 +119,32 @@ def districts():
     if member is None:
         return "member not found", 404
     address = member[0]
-    return render_template("district.html", email=email, address=address)
+    
+    filter_on = session.get("filter", True)
+    if "filter" not in session:
+        session["filter"] = True
+    return render_template("district.html", email=email, address=address, filter_on=filter_on)
 
 # I LOVE Kabuki-Cho by Kirinji
+
+@app.route("/toggle_filter")
+def toggle_filter():
+    if "email" not in session:
+        return redirect("/")
+    email = session["email"]
+    current = session.get("filter", True)
+    new_val = not current
+    session["filter"] = new_val
+    conn = get_connections()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE members SET filter_on = %s WHERE email = %s",
+        (new_val, email)
+    )
+    conn.commit()
+    conn.close()
+    return redirect(request.referrer or "/district")
+
 
 @app.route("/messages")
 def messages():
@@ -144,15 +171,23 @@ def messages():
         "SELECT author_email, content, timestamp, origin_address FROM messages WHERE origin_address LIKE %s ORDER BY timestamp DESC",
         (f"{prefix}%",)
     )
-    msgs = cursor.fetchall()
+    raw_msgs = cursor.fetchall()
     conn.commit()
     conn.close()
+
+    filter_on = session.get("filter", True)
+    msgs = []
+    for msg in raw_msgs:
+        content = blur_bad_words(msg[1]) if filter_on else msg[1]
+        msgs.append((msg[0].split("@")[0], content, msg[2], msg[3]))
+
     return render_template("messages.html",
         email=email,
         address=address,
         messages=msgs,
         level_name=level_names[current_level],
-        prefix=prefix
+        prefix=prefix,
+        filter_on=filter_on
     )
 
 
@@ -193,18 +228,36 @@ def library():
         prefix = address
     level_names = ["core hub", "sub-core", "city", "your district"]
     cursor.execute(
-        "SELECT id, author_email, title, timestamp, origin_address FROM library WHERE origin_address LIKE %s ORDER BY timestamp DESC",
+            "SELECT id, author_email, title, timestamp, origin_address, nsfw FROM library WHERE origin_address LIKE %s ORDER BY timestamp DESC",
         (f"{prefix}%",)
     )
-    entries = cursor.fetchall()
+    raw_entries = cursor.fetchall()
     conn.commit()
     conn.close()
+
+    filter_on = session.get("filter", True)
+    entries = []
+    for e in raw_entries:
+        auto_flag = contains_bad_words(e[2])
+        is_nsfw = e[5] or auto_flag
+        title = blur_bad_words(e[2]) if filter_on and is_nsfw else e[2]
+        entries.append({
+            "id": e[0],
+            "author": e[1].split("@")[0],
+            "title": title,
+            "timestamp": e[3],
+            "address": e[4],
+            "nsfw": is_nsfw,
+            "blocked": is_nsfw and filter_on
+        })
+
     return render_template("library.html",
         email=email,
         address=address,
         entries=entries,
         level_name=level_names[current_level],
-        prefix=prefix
+        prefix=prefix,
+        filter_on=filter_on
     )
 
 @app.route("/library/<int:entry_id>")
@@ -241,8 +294,20 @@ def write():
     if request.method == "POST":
         title = request.form["title"]
         content = request.form["content"]
+        nsfw = "nsfw" in request.form
+        auto_flag = contains_bad_words(title) or contains_bad_words(content)
+        is_nsfw = nsfw or auto_flag
         if title.strip() and content.strip():
-            write_entry(email, address, title, content)
+            conn = get_connections()
+            cursor = conn.cursor()
+            from datetime import datetime
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+            cursor.execute(
+                "INSERT INTO library (origin_address, author_email, title, content, timestamp, nsfw) VALUES (%s, %s, %s, %s, %s, %s)",
+                (address, email, title, content, timestamp, is_nsfw)
+            )
+            conn.commit()
+            conn.close
         return redirect("/library")
     return render_template("write.html", email=email, address=address)
 

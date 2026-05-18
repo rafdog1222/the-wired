@@ -18,6 +18,38 @@
             justify-content: space-between;
             align-items: flex-end;
         }
+        .blurred {
+            filter: blur(4px);
+            cursor: pointer;
+            user-select: none;
+            transition: filter 0.2s;
+        }
+
+        .blurred:hover {
+            filter: blur(4px);
+        }
+
+       .nsfw-blocked {
+            filter: blur(8px);
+            pointer-events: none;
+            user-select: none;
+        }
+
+       .filter-toggle {
+           font-size: 0.8em;
+           color: #888;
+           text-decoration: none;
+           margin-left: 20px;
+        }
+
+        .filter-toggle:hover {
+           color: #00ff99;
+        }
+
+        .filter-on {
+           color: #00ff99;
+        }
+
         .nav a {
             color: #888;
             text-decoration: none;
@@ -55,21 +87,58 @@
             <div style="color:#888; font-size:0.85em;">{{ level_name }} library</div>
             <div style="font-size:1.2em;">{{ prefix }}</div>
         </div>
-        <div class="nav">
-            <a href="/district">← home</a>
-            <a href="/logout">disconnect</a>
-        </div>
+    <div class="nav">
+        <a href="/district">← home</a>
+
+        <a href="/toggle_filter"
+        class="filter-toggle {% if filter_on %}filter-on{% endif %}">
+         filter {{ "on" if filter_on else "off" }}
+     </a>
+
+     <a href="/logout">disconnect</a>
+    </div>
     </div>
 
     <a href="/write" class="write-btn">+ write an entry</a>
 
     {% if entries %}
-        {% for entry in entries %}
-        <a href="/library/{{ entry[0] }}" class="entry">
-            <div class="entry-title">{{ entry[2] }}</div>
-            <div class="entry-meta">{{ entry[3] }} — {{ entry[1] }}</div>
+    {% for entry in entries %}
+
+         {% if entry.blocked %}
+         <div class="entry">
+
+             <div class="entry-title">
+                 {{ entry.title | safe }}
+             </div>
+
+             <div class="entry-meta">
+                 {{ entry.timestamp }} — {{ entry.author }}
+             </div>
+
+             <div style="color:#555; font-size:0.8em; margin-top:4px;">
+                 ⚠ sensitive — turn filter off to read
+             </div>
+         </div>
+
+        {% else %}
+        <a href="/library/{{ entry.id }}" class="entry">
+
+            <div class="entry-title">{{ entry.title }}</div>
+
+            <div class="entry-meta">
+                {{ entry.timestamp }} — {{ entry.author }}
+            </div>
+
+            {% if entry.nsfw %}
+            <div style="color:#555; font-size:0.8em;">
+                ⚠ nsfw
+            </div>
+            {% endif %}
+ 
         </a>
-        {% endfor %}
+        {% endif %}
+
+    {% endfor %}
     {% else %}
         <div class="empty">the library is empty... leave something behind</div>
     {% endif %}

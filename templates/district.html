@@ -54,6 +54,9 @@
         <a href="/citizens" class="logout" style="margin-right: 16px;">citizens</a>
         <div class="email">{{ email }}</div>
         <div class="address">{{ address }}</div>
+        <div style="color:#555; font-size:0.85em; margin-top:4px;">
+            filter {{ "● on" if filter_on else "○ off" }}
+        </div>
         <div style="color:#888; font-size:0.8em;">we are all connected</div>
     </div>
 
@@ -69,6 +72,13 @@
         <a href="/travel" class="menu-item">
             <h3>travel up</h3>
             <p>view the wider wired</p>
+        </a>
+        <a href="/toggle_filter" class="menu-item">
+            <h3>content filter</h3>
+            <p>
+                currently
+                {{ "on — click to disable" if filter_on else "off — click to enable" }}
+            </p>
         </a>
     </div>
 </body>

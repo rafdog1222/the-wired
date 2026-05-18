@@ -10,6 +10,43 @@
             margin: 0;
             padding: 40px;
         }
+       .blurred {
+            filter: blur(4px);
+            cursor: pointer;
+            user-select: none;
+            transition: filter 0.2s;
+        }
+
+       .blurred:hover {
+            filter: blur(3px);
+        }
+
+        .nsfw-blocked {
+            filter: blur(8px);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .filter-toggle {
+            font-size: 0.8em;
+            color: #888;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .filter-toggle:hover {
+            color: #00ff99;
+        }
+
+        .filter-on {
+           color: #00ff99;
+        }
+        .origin {
+           color: #555;
+           font-size: 0.75em;
+           margin-bottom: 8px;
+        }
+
         .header {
             border-bottom: 1px solid #00ff99;
             padding-bottom: 20px;
@@ -71,18 +108,30 @@
 <body>
     <div class="header">
         <div>
-            <div style="color:#888; font-size:0.85em;">{{ level_name }} message board</div>
+            <div style="color:#888; font-size:0.85em;">
+                {{ level_name }} message board
+            </div>
+
             <div class="address">{{ prefix }}</div>
         </div>
+
         <div class="nav">
             <a href="/district">← home</a>
+
+            <a href="/toggle_filter"
+               class="filter-toggle {% if filter_on %}filter-on{% endif %}">
+                filter {{ "on" if filter_on else "off" }}
+            </a>
+
             <a href="/logout">disconnect</a>
         </div>
     </div>
 
     <div class="post-form">
         <form method="POST" action="/post_message">
-            <textarea name="content" placeholder="say something to your district..."></textarea>
+            <textarea name="content"
+                      placeholder="say something to your district..."></textarea>
+
             <button type="submit">post to board</button>
         </form>
     </div>
@@ -90,12 +139,25 @@
     {% if messages %}
         {% for msg in messages %}
         <div class="message">
-            <div class="meta">{{ msg[2] }} — {{ msg[0] }}</div>
-            <div class="content">{{ msg[1] }}</div>
+
+            <div class="meta">
+                {{ msg[2] }} — {{ msg[0] }}
+            </div>
+
+            <div class="origin">
+                from {{ msg[3] }}
+            </div>
+
+            <div class="content">
+                {{ msg[1] | safe }}
+            </div>
+
         </div>
         {% endfor %}
     {% else %}
-        <div class="empty">the board is quiet... be the first to post</div>
+        <div class="empty">
+            the board is quiet... be the first to post
+        </div>
     {% endif %}
 
 </body>
