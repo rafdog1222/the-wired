@@ -22,7 +22,7 @@ def view_messages_at_level(address, level):
     level_names = ["core hub", "sub-core", "city", "district"]
 
     cursor.execute(
-            "SELECT origin_address, author_email, content, timestamp FROM messages WHERE origin_address LIKE ? ORDER BY timestamp DESC LIMIT 20",
+            "SELECT origin_address, author_email, content, timestamp FROM messages WHERE origin_address LIKE %s ORDER BY timestamp DESC LIMIT 20",
             (f"{prefix}%",)
         )
 
@@ -49,7 +49,7 @@ def view_library_at_level(address, level):
     level_names = ["core hub", "sub-core", "city", "districts"]
 
     cursor.execute(
-            "SELeCT origin_address, author_email, title, timestamp FROM library WHERE origin_address LIKE ? ORDER BY timestamp DESC", 
+            "SELeCT origin_address, author_email, title, timestamp FROM library WHERE origin_address LIKE %s ORDER BY timestamp DESC", 
             (f"{prefix}%",)
         )
 

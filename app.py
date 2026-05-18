@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, session
 from district import assign_member
 from database import get_connections
@@ -10,13 +12,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
-app.secret_key = "wired-secret-change-this-later"
+
+load_dotenv()
+
+app.secret_key = os.getenv("SECRET_KEY", "fallback-dev-key")
+
 
 def get_member(email):
     conn = get_connections()
     cursor = conn.cursor()
     cursor.execute(
-            "SELECT address FROM members WHERE email = ?", 
+            "SELECT address FROM members WHERE email = %s", 
             (email,)
     )
     member = cursor.fetchone()
@@ -50,7 +56,7 @@ def signup():
         else:
             conn = get_connections()
             cursor = conn.cursor()
-            cursor.execute("SELECT email FROM members WHERE email = ?", (email,))
+            cursor.execute("SELECT email FROM members WHERE email = %s", (email,))
             existing = cursor.fetchone()
             if existing:
                 error = "that email is already in the wired.." 
@@ -59,7 +65,7 @@ def signup():
                 password_hash  = generate_password_hash(password)
                 assign_member(email)
                 cursor.execute(
-                    "UPDATE members SET password_hash = ? WHERE email = ?",
+                    "UPDATE members SET password_hash = %s WHERE email = %s",
                     (password_hash, email)
                 )
                 conn.commit()
@@ -81,7 +87,7 @@ def login():
         conn = get_connections()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT password_hash FROM members WHERE email = ?", 
+            "SELECT password_hash FROM members WHERE email = %s", 
             (email,)
         )
         member = cursor.fetchone()
@@ -106,6 +112,8 @@ def districts():
         return redirect("/")
     email = session["email"]
     member = get_member(email)
+    if member is None:
+        return "member not found", 404
     address = member[0]
     return render_template("district.html", email=email, address=address)
 
@@ -133,7 +141,7 @@ def messages():
         prefix = address
     level_names = ["core hub", "sub-core", "city", "your district"]
     cursor.execute(
-        "SELECT author_email, content, timestamp, origin_address FROM messages WHERE origin_address LIKE ? ORDER BY timestamp DESC",
+        "SELECT author_email, content, timestamp, origin_address FROM messages WHERE origin_address LIKE %s ORDER BY timestamp DESC",
         (f"{prefix}%",)
     )
     msgs = cursor.fetchall()
@@ -185,7 +193,7 @@ def library():
         prefix = address
     level_names = ["core hub", "sub-core", "city", "your district"]
     cursor.execute(
-        "SELECT id, author_email, title, timestamp, origin_address FROM library WHERE origin_address LIKE ? ORDER BY timestamp DESC",
+        "SELECT id, author_email, title, timestamp, origin_address FROM library WHERE origin_address LIKE %s ORDER BY timestamp DESC",
         (f"{prefix}%",)
     )
     entries = cursor.fetchall()
@@ -209,7 +217,7 @@ def library_entry(entry_id):
     conn = get_connections()
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT author_email, title, content, timestamp, origin_address FROM library WHERE id = ?",
+        "SELECT author_email, title, content, timestamp, origin_address FROM library WHERE id = %s",
         (entry_id,)
     )
     entry = cursor.fetchone()
@@ -258,13 +266,13 @@ def citizens():
 def get_or_create_travel(cursor, email): 
 
     cursor.execute(
-        "SELECT current_level, travel_started, destination_level FROM travel WHERE email = ?",
+        "SELECT current_level, travel_started, destination_level FROM travel WHERE email = %s",
         (email,)
     )
     status = cursor.fetchone()
     if not status:
         cursor.execute(
-            "INSERT INTO travel (email, current_level, travel_started, destination_level) VALUES (?, 3, NULL, NULL)",
+            "INSERT INTO travel (email, current_level, travel_started, destination_level) VALUES (%s, 3, NULL, NULL)",
             (email,)
         )
         return (3, None, None)
@@ -297,7 +305,7 @@ def travel():
         else:
             current_level = status[2]
             cursor.execute(
-                "UPDATE travel SET current_level = ?, travel_started = NULL, destination_level = NULL WHERE email = ?",
+                "UPDATE travel SET current_level = %s, travel_started = NULL, destination_level = NULL WHERE email = %s",
                 (current_level, email)
             )
 
@@ -336,7 +344,20 @@ def travel_go(destination):
 
     now = datetime.now().isoformat()
     cursor.execute(
-        "INSERT OR REPLACE INTO travel (email, current_level, travel_started, destination_level) VALUES (?, ?, ?, ?)",
+        """
+        INSERT INTO travel (
+             email,
+             current_level,
+             travel_started,
+             destination_level
+         )
+         VALUES (%s, %s, %s, %s)
+         ON CONFLICT (email)
+         DO UPDATE SET
+             current_level = EXCLUDED.current_level,
+             travel_started = EXCLUDED.travel_started,
+             destination_level = EXCLUDED.destination_level
+         """,
         (email, current_level, now, destination)
     )
     conn.commit()
@@ -356,7 +377,7 @@ def travel_messages():
     conn = get_connections()
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT current_level FROM travel WHERE email = ?", 
+        "SELECT current_level FROM travel WHERE email = %s", 
         (email,)
     )
     status = cursor.fetchone()
@@ -376,7 +397,7 @@ def travel_messages():
     else:
         prefix = address
     cursor.execute(
-        "SELECT origin_address, author_email, content, timestamp FROM messages WHERE origin_address LIKE ? ORDER BY timestamp DESC LIMIT 30",
+        "SELECT origin_address, author_email, content, timestamp FROM messages WHERE origin_address LIKE %s ORDER BY timestamp DESC LIMIT 30",
         (f"{prefix}%",)
     )
     msgs = cursor.fetchall()

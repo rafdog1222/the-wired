@@ -12,7 +12,7 @@ def generate_address(cursor):
     for d in districts:
         address = f"#0-{sub}-{city:02d}-{d:04d}"
         cursor.execute(
-            "SELECT COUNT(*) FROM members WHERE address = ?",
+            "SELECT COUNT(*) FROM members WHERE address = %s",
             (address,)
         )
         count = cursor.fetchone()[0]
@@ -27,7 +27,7 @@ def assign_member(email):
     cursor = conn.cursor()
 
     cursor.execute(
-       "SELECT address FROM members WHERE email = ?",
+       "SELECT address FROM members WHERE email = %s",
        (email,)
     )
     existing = cursor.fetchone()
@@ -49,7 +49,7 @@ def assign_member(email):
 
     today = date.today().isoformat()
     cursor.execute(
-        "INSERT INTO members (email, address, joined_date) VALUES (?, ?, ?)",
+        "INSERT INTO members (email, address, joined_date) VALUES (%s, %s, %s)",
         (email, adress, today)
     )
 

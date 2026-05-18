@@ -8,7 +8,7 @@ def post_message(email, address, content):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     cursor.execute(
-            "INSERT INTO messages (origin_address, author_email, content, timestamp) VALUES (?, ?, ?, ?)",
+            "INSERT INTO messages (origin_address, author_email, content, timestamp) VALUES (%s, %s, %s, %s)",
             (address, email, content, timestamp)
         )
 
@@ -21,7 +21,7 @@ def read_message(address):
     cursor = conn.cursor()
 
     cursor.execute(
-            "SELECT author_email, content, timestamp FROM messages WHERE origin_address = ? ORDER BY timestamp DESC",
+            "SELECT author_email, content, timestamp FROM messages WHERE origin_address = %s ORDER BY timestamp DESC",
             (address,)
         )
 

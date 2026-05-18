@@ -1,10 +1,20 @@
-import sqlite3
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from dotenv import load_dotenv
 
-DB_FILE = "wired.db"
+load_dotenv()
+
+DB_CONFIG = {
+    "dbname": os.getenv("DB_NAME"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "host": os.getenv("DB_HOST", "localhost"),
+    "port": os.getenv("DB_PORT", 5432)
+}
+
 
 def get_connections():
-    conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row
+    conn = psycopg2.connect(**DB_CONFIG)
     return conn
 
 def setup_database():
@@ -22,7 +32,7 @@ def setup_database():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             origin_address TEXT NOT NULL,
             author_email TEXT NOT NULL,
             content TEXT NOT NULL,
@@ -32,7 +42,7 @@ def setup_database():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS library (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             origin_address TEXT NOT NULL,
             author_email TEXT NOT NULL,
             title TEXT NOT NULL,
@@ -50,12 +60,8 @@ def setup_database():
         )
     """)
 
-    try:
-        cursor.execute("ALTER TABLE members ADD COLUMN password_hash TEXT")
-    except:
-        pass
-
     conn.commit()
+    cursor.close()
     conn.close()
 
 setup_database()

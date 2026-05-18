@@ -6,7 +6,7 @@ def write_entry(email, address, title, content):
     cursor = conn.cursor()
 
     cursor.execute(
-            "SELECT id FROM library WHERE author_email = ? AND title = ?",
+            "SELECT id FROM library WHERE author_email = %s AND title = %s",
             (email, title)
         )
 
@@ -20,7 +20,7 @@ def write_entry(email, address, title, content):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     cursor.execute(
-            "INSERT INTO library (origin_address, author_email, title, content, timestamp) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO library (origin_address, author_email, title, content, timestamp) VALUES (%s, %s, %s, %s, %s)",
             (address, email, title, content, timestamp)
         )
 
@@ -34,7 +34,7 @@ def read_library(address):
     cursor = conn.cursor()
 
     cursor.execute(
-            "SELECT author_email, title, content, timestamp FROM library WHERE origin_address = ? ORDER BY timestamp DESC",
+            "SELECT author_email, title, content, timestamp FROM library WHERE origin_address = %s ORDER BY timestamp DESC",
             (address,)
         )
 
@@ -59,7 +59,7 @@ def read_entry(address, title):
     cursor = conn.cursor()
 
     cursor.execute(
-            "SELECT author_email, title, content, timestamp FROM library WHERE origin_address = ? AND title =?",
+            "SELECT author_email, title, content, timestamp FROM library WHERE origin_address = %s AND title =%s",
             (address, title)
         )
 

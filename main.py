@@ -11,7 +11,7 @@ def get_member(email):
     cursor = conn.cursor()
 
     cursor.execute(
-            "SELECT address FROM members WHERE email = ?",
+            "SELECT address FROM members WHERE email = %s",
             (email,)
         )
 
