@@ -46,7 +46,20 @@
            font-size: 0.75em;
            margin-bottom: 8px;
         }
-
+        .delete-btn {
+           background: none;
+           border: none;
+           color: #555;
+           cursor: pointer;
+           font-family: monospace;
+           font-size: 0.9em;
+           margin-left: 12px;
+           padding: 0;
+        }
+        .delete-btn:hover { 
+            background: none;
+            color: #ff4444;
+        }
         .header {
             border-bottom: 1px solid #00ff99;
             padding-bottom: 20px;
@@ -139,19 +152,20 @@
     {% if messages %}
         {% for msg in messages %}
         <div class="message">
-
             <div class="meta">
                 {{ msg[2] }} — {{ msg[0] }}
+                {% if msg[0] == username or is_admin or is_owner %}
+                <form method="POST" action="/delete_message/{{ msg[4] }}" style="display:inline;">
+                    <button type="submit" class="delete-btn">× delete</button>
+                </form>
+                {% endif %}
             </div>
-
             <div class="origin">
                 from {{ msg[3] }}
             </div>
-
             <div class="content">
                 {{ msg[1] | safe }}
             </div>
-
         </div>
         {% endfor %}
     {% else %}

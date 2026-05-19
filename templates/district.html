@@ -53,10 +53,19 @@
         <a href="/logout" class="logout">disconnect</a>
         <a href="/citizens" class="logout" style="margin-right: 16px;">citizens</a>
         <div class="email">{{ email }}</div>
-        <div class="address">{{ address }}</div>
         <div style="color:#555; font-size:0.85em; margin-top:4px;">
             filter {{ "● on" if filter_on else "○ off" }}
         </div>
+        <div class="address">{{ address }}</div>
+        {% if is_owner %}
+        <div style="color:#00ff99; font-size:0.75em; margin-top:2px;">
+            ◈  owner | root access
+        </div>
+        {% elif is_admin %}
+        <div style="color:#888; font-size:0.7em; margin-top:2px;">
+            ◈  admin | sudo access
+        </div>
+        {% endif %}
         <div style="color:#888; font-size:0.8em;">we are all connected</div>
     </div>
 
@@ -69,6 +78,12 @@
             <h3>library</h3>
             <p>read and write district entries</p>
         </a>
+        {% if is_admin or is_owner %}
+        <a href="/admin" class="menu-item">
+            <h3>admin panel</h3>
+            <p>root access, handle with care</p>
+        </a>
+        {% endif %}
         <a href="/travel" class="menu-item">
             <h3>travel up</h3>
             <p>view the wider wired</p>

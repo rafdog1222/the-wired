@@ -29,6 +29,19 @@
             font-size: 1.5em;
             margin-bottom: 8px;
         }
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #555;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 1em;
+            padding: 0;
+        }
+        .delete-btn:hover {
+           background: none;
+           color: #ff4444;
+        }
         .meta {
             color: #888;
             font-size: 0.85em;
@@ -54,7 +67,15 @@
             <a href="/logout">disconnect</a>
         </div>
     </div>
-
+       {% if entry[0] == username or is_admin or is_owner %}
+       <form method="POST" 
+             action="/delete_entry/{{ entry_id }}"
+             style="margin:0 0 18px 0;">
+           <button type="submit" class="delete-btn">
+               × delete this entry
+           </button>
+       </form>
+       {% endif %}
     <div class="entry-title">{{ entry[1] }}</div>
     <div class="meta">{{ entry[3] }} — {{ entry[0] }}</div>
     <div class="content">{{ entry[2] }}</div>

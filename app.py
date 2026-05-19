@@ -18,6 +18,15 @@ load_dotenv()
 app.secret_key = os.getenv("SECRET_KEY", "fallback-dev-key")
 
 
+
+
+def get_permissions():
+    return {
+        "is_admin": session.get("is_admin", False),
+        "is_owner": session.get("is_owner", False),
+        "username": session.get("email", "").split("@")[0]
+    }
+
 def get_member(email):
     conn = get_connections()
     cursor = conn.cursor()
@@ -87,7 +96,7 @@ def login():
         conn = get_connections()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT password_hash, filter_on FROM members WHERE email = %s",
+            "SELECT password_hash, filter_on, is_admin, is_owner FROM members WHERE email = %s",
             (email,)
         )
         member = cursor.fetchone()
@@ -101,8 +110,17 @@ def login():
             session["email"] = email
             # member[1] = filter_on
             session["filter"] = (
-                member[1] if member[1] is not None else True
+                    member[1] if member[1] is not None else True
             )
+            # member[2] = is_admin
+            session["is_admin"] = (
+                    member[2] if member[2] is not None else False
+            )
+            # member[3] = is_owner 
+            session["is_owner"] = (
+                    member[3] if member[3] is not None else False
+            )
+                    
 
             return redirect("/district")
     return render_template("login.html", error=error)
@@ -123,7 +141,13 @@ def districts():
     filter_on = session.get("filter", True)
     if "filter" not in session:
         session["filter"] = True
-    return render_template("district.html", email=email, address=address, filter_on=filter_on)
+    return render_template(
+            "district.html", 
+            email=email, 
+            address=address, 
+            filter_on=filter_on,
+            **get_permissions()
+    )
 
 # I LOVE Kabuki-Cho by Kirinji
 
@@ -168,7 +192,7 @@ def messages():
         prefix = address
     level_names = ["core hub", "sub-core", "city", "your district"]
     cursor.execute(
-        "SELECT author_email, content, timestamp, origin_address FROM messages WHERE origin_address LIKE %s ORDER BY timestamp DESC",
+        "SELECT author_email, content, timestamp, origin_address, id FROM messages WHERE origin_address LIKE %s ORDER BY timestamp DESC",
         (f"{prefix}%",)
     )
     raw_msgs = cursor.fetchall()
@@ -179,7 +203,7 @@ def messages():
     msgs = []
     for msg in raw_msgs:
         content = blur_bad_words(msg[1]) if filter_on else msg[1]
-        msgs.append((msg[0].split("@")[0], content, msg[2], msg[3]))
+        msgs.append((msg[0].split("@")[0], content, msg[2], msg[3], msg[4]))
 
     return render_template("messages.html",
         email=email,
@@ -187,7 +211,8 @@ def messages():
         messages=msgs,
         level_name=level_names[current_level],
         prefix=prefix,
-        filter_on=filter_on
+        filter_on=filter_on,
+        **get_permissions()
     )
 
 
@@ -277,7 +302,14 @@ def library_entry(entry_id):
     conn.close()
     if not entry:
         return redirect("/library")
-    return render_template("entry.html", email=email, address=address, entry=entry)
+    return render_template("entry.html",
+        email=email,
+        address=address,
+        entry=entry,
+        entry_id=entry_id,
+        **get_permissions()
+    )
+
 
 # should i keep telling my music? 
 # ahh, why not..
@@ -476,6 +508,166 @@ def travel_messages():
         level_name=level_names[current_level],
         prefix=prefix
     )
+
+
+# admin stuff now, this will take a while.. 
+
+@app.route("/admin")
+def admin():
+    if "email" not in session:
+        return redirect("/")
+    if not session.get("is_admin", False):
+        return redirect("/district")
+    # my backdoor, or yours.. 
+    conn = get_connections()
+    cursor = conn.cursor()
+    cursor.execute(
+            "SELECT email, address, joined_date, is_admin, is_owner FROM members ORDER BY joined_date ASC"
+    )
+    members = cursor.fetchall()
+    conn.close()
+    return render_template("admin.html",
+        username=session["email"].split("@")[0],
+        members=members,
+        is_owner=session.get("is_owner", False)
+    )
+
+
+@app.route("/admin/kick/<email>", methods=["POST"])
+def kick_user(email):
+    if "email" not in session:
+        return redirect("/")
+    is_admin = session.get("is_admin", False)
+    is_owner = session.get("is_owner", False)
+    if not is_admin and not is_owner:
+        return redirect("/district")
+    conn = get_connections()
+    cursor = conn.cursor()
+    cursor.execute(
+       "SELECT is_admin, is_owner FROM members WHERE email = %s",
+        (email,)
+    )
+    target = cursor.fetchone()
+    if not target:
+        conn.close()
+        return redirect("/admin")
+    target_admin = target[0]
+    target_owner = target[1]
+    # admins cannot kick admins safty, might add a freindship system, 
+    if target_admin and not is_owner:
+        conn.close()
+        return redirect("/admin")
+
+    # nobody kicks owner lol losers 
+    if target_owner:
+        conn.close()
+        return redirect("/admin")
+    cursor.execute(
+        "DELETE FROM members WHERE email = %s",
+        (email,)
+    )
+    cursor.execute(
+        "DELETE FROM messages WHERE author_email = %s",
+        (email,)
+    )
+    cursor.execute(
+        "DELETE FROM library WHERE author_email = %s",
+        (email,)
+    )
+    cursor.execute(
+        "DELETE FROM travel WHERE email = %s",
+        (email,)
+    )
+    conn.commit()
+    conn.close()
+    return redirect("/admin")
+
+
+@app.route("/admin/remove_admin/<email>", methods=["POST"])
+def remove_admin(email):
+    if not session.get("is_owner", False):
+        return redirect("/district")
+    conn = get_connections()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE members SET is_admin = FALSE WHERE email = %s",
+        (email,)
+    )
+    conn.commit()
+    conn.close()
+    return redirect("/admin")
+
+
+@app.route("/admin/make_admin/<email>", methods=["POST"])
+def make_admin(email):
+    if not session.get("is_admin", False):
+        return redirect("/district")
+    conn = get_connections()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE members SET is_admin = TRUE WHERE email = %s",
+        (email,)
+    )
+    conn.commit()
+    conn.close()
+    return redirect("/admin")
+
+# praying that's right..
+
+@app.route("/delete_message/<int:message_id>", methods=["POST"])
+def delete_message(message_id):
+    if "email" not in session:
+        return redirect("/")
+    email = session["email"]
+    is_admin = session.get("is_admin", False)
+    is_owner = session.get("is_owner", False)
+    conn = get_connections()
+    cursor = conn.cursor()
+    # root/admin can delete anything lol
+    if is_admin or is_owner:
+        cursor.execute(
+            "DELETE FROM messages WHERE id = %s",
+            (message_id,)
+        )
+        conn.commit()
+    else:
+        # normal users can only delete their own, untill we turn on 1984 mode
+        cursor.execute(
+            "DELETE FROM messages WHERE id = %s AND author_email = %s",
+            (message_id, email)
+        )
+        conn.commit()
+    conn.close()
+    return redirect(request.referrer or "/messages")
+
+@app.route("/delete_entry/<int:entry_id>", methods=["POST"])
+def delete_entry(entry_id):
+    if "email" not in session:
+        return redirect("/")
+    email = session["email"]
+    is_admin = session.get("is_admin", False)
+    is_owner = session.get("is_owner", False)
+
+    conn = get_connections()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT author_email FROM library WHERE id = %s",
+        (entry_id,)
+    )
+    entry = cursor.fetchone()
+    if entry and (
+        entry[0] == email
+        or is_admin
+        or is_owner
+    ):
+        cursor.execute(
+            "DELETE FROM library WHERE id = %s",
+            (entry_id,)
+        )
+        conn.commit()
+    conn.close()
+    return redirect(request.referrer or "/library")
+
 
 # i was about to say hastag, but that would be useles, so read the next line like "hastag" insted of "hash"
 # logging out yippe! 
